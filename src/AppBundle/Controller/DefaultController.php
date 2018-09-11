@@ -14,8 +14,9 @@ class DefaultController extends Controller
     public function indexAction(Request $request)
     {
         $voucherGenerator = $this->get('app.voucher_generator');
-        $voucherGenerator->setNumCodesToGenerate(1000);
-        $voucherGenerator->setCodeLength(9);
+        $voucherGenerator->setNumCodesToGenerate(10);
+        $voucherGenerator->setCodeLength(7);
+        $voucherGenerator->setFileName('codes.txt');
         $voucherGenerator->generate();
 
         return $this->render('default/index.html.twig', [
