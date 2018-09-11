@@ -5,6 +5,9 @@ namespace AppBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use AppBundle\Form\VoucherListType;
+use AppBundle\Entity\VoucherList;
+
 
 class DefaultController extends Controller
 {
@@ -13,14 +16,18 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $voucherGenerator = $this->get('app.voucher_generator');
-        $voucherGenerator->setNumCodesToGenerate(10);
-        $voucherGenerator->setCodeLength(7);
-        $voucherGenerator->setFileName('codes.txt');
-        $voucherGenerator->generate();
+        $voucherList = new VoucherList();
+        $form = $this->createForm(VoucherListType::class, $voucherList);
+        $form->handleRequest($request);
 
-        return $this->render('default/index.html.twig', [
-            'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
+        if ($form->isValid()) {
+            $voucherGenerator = $this->get('app.voucher_generator');
+            $voucherGenerator->setVoucherList($voucherList);
+            $voucherGenerator->generate();
+        }
+
+        return $this->render('home.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
 }

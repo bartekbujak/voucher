@@ -1,23 +1,22 @@
 <?php
 namespace AppBundle\Service;
 
+use AppBundle\Entity\VoucherList;
+
 class VoucherGenerator
 {
     const CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
-    const DEFAULT_FILE_NAME = 'codes.txt';
-
-    private $numCodesToGenerate;
-
-    private $codeLength;
-
-    private $fileName;
+    /**
+     * @var VoucherList
+     */
+    private $voucherList;
 
     public function generate() {
         $this->_checkMaxAmount();
         $chars = self::CHARS;
-        $numCodesToGenerate = $this->numCodesToGenerate;
-        $codeLen = $this->codeLength;
+        $numCodesToGenerate = $this->voucherList->getNumCodesToGenerate();
+        $codeLen = $this->voucherList->getCodeLength();
         $codes =[];
 
         $n = 1;
@@ -39,38 +38,22 @@ class VoucherGenerator
         $this->_saveFile($codes);
     }
 
-    /**
-     * @param $num
-     */
-    public function setNumCodesToGenerate($num)
+
+    public function setVoucherList(VoucherList $voucherList)
     {
-        $this->numCodesToGenerate = $num;
+        $this->voucherList = $voucherList;
     }
 
-    /**
-     * @param $length
-     */
-    public function setCodeLength($length)
-    {
-        $this->codeLength = $length;
-    }
-
-    /**
-     * @param $fileName
-     */
-    public function setFileName($fileName)
-    {
-        $this->fileName = $fileName;
-    }
 
     /**
      * @param $values
+     * @param $numCodesToGenerate
      * @return mixed
      */
-    protected function _countLack($values)
+    protected function _countLack($values, $numCodesToGenerate)
     {
-        if ($values < $this->numCodesToGenerate) {
-            return $this->numCodesToGenerate - $values;
+        if ($values < $numCodesToGenerate) {
+            return $numCodesToGenerate - $values;
         }
     }
 
@@ -79,21 +62,19 @@ class VoucherGenerator
      */
     protected function _checkMaxAmount()
     {
-        $maxAmount = pow(strlen(self::CHARS),$this->codeLength);
+        $maxAmount = pow(strlen(self::CHARS),$this->voucherList->getCodeLength());
 
-        if ($this->numCodesToGenerate > $maxAmount) {
-            $this->setNumCodesToGenerate((int) $maxAmount * 0.9);
+        if ($this->voucherList->getNumCodesToGenerate() > $maxAmount) {
+            $this->voucherList->setNumCodesToGenerate((int) $maxAmount * 0.9);
         }
     }
 
     /**
-     * @param $filename
      * @param $codes
      */
     protected function _saveFile($codes)
     {
-
-        file_put_contents($this->fileName, implode(PHP_EOL, $codes) . "\n", FILE_USE_INCLUDE_PATH	);
+        file_put_contents($this->voucherList->getFileName() . '.txt', implode(PHP_EOL, $codes) . "\n", FILE_USE_INCLUDE_PATH);
     }
 
 }
