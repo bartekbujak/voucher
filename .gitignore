@@ -16,3 +16,6 @@
 /vendor/
 /web/bundles/
 /.idea
+/app/tmp
+!app/tmp.gitkeep
+

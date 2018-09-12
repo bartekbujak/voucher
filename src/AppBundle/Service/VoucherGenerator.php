@@ -7,12 +7,28 @@ class VoucherGenerator
 {
     const CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
+    const SAVE_DIR_NAME ='tmp';
+
     /**
-     * @var VoucherList
+     * @var VoucherList $voucherList
      */
     private $voucherList;
 
-    public function generate() {
+    /**
+     * @var string
+     */
+    private $rootDir;
+
+    public function __construct($rootDir)
+    {
+        $this->rootDir = $rootDir;
+    }
+
+    /**
+     * Generate code list and execute save
+     */
+    public function generate()
+    {
         $this->_checkMaxAmount();
         $chars = self::CHARS;
         $numCodesToGenerate = $this->voucherList->getNumCodesToGenerate();
@@ -74,7 +90,15 @@ class VoucherGenerator
      */
     protected function _saveFile($codes)
     {
-        file_put_contents($this->voucherList->getFileName() . '.txt', implode(PHP_EOL, $codes) . "\n", FILE_USE_INCLUDE_PATH);
+        file_put_contents($this->_getSaveFilePath() . '.txt', implode(PHP_EOL, $codes) . "\n", FILE_USE_INCLUDE_PATH);
+    }
+
+    /**
+     * @return string
+     */
+    protected function _getSaveFilePath()
+    {
+        return $this->rootDir . DIRECTORY_SEPARATOR . self::SAVE_DIR_NAME . DIRECTORY_SEPARATOR  . $this->voucherList->getFileName();
     }
 
 }

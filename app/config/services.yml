@@ -37,4 +37,5 @@ services:
 
     app.voucher_generator:
         class: 'AppBundle\Service\VoucherGenerator'
+        arguments: [%kernel.root_dir%]
         public: true
